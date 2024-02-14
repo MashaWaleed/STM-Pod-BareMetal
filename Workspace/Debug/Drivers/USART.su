@@ -1,0 +1,10 @@
+../Drivers/USART.c:25:16:GetIndex	16	static
+../Drivers/USART.c:42:6:MCAL_USART_Init	32	static
+../Drivers/USART.c:77:6:MCAL_USART_DeInit	16	static
+../Drivers/USART.c:90:6:MCAL_USART_Send_Data	32	static
+../Drivers/USART.c:112:6:MCAL_USART_WAIT_TC	16	static
+../Drivers/USART.c:117:6:MCAL_USART_Get_Data	32	static
+../Drivers/USART.c:144:6:MCAL_USART_GPIO_SetPins	24	static
+../Drivers/USART.c:258:6:USART1_IRQHandler	8	static
+../Drivers/USART.c:262:6:USART2_IRQHandler	8	static
+../Drivers/USART.c:266:6:USART3_IRQHandler	8	static

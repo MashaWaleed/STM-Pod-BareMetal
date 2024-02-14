@@ -1,0 +1,5 @@
+../Drivers/ADC.c:12:16:Pin_Position	16	static
+../Drivers/ADC.c:66:13:delay	24	static
+../Drivers/ADC.c:75:9:MCAL_ADC_Init	32	static
+../Drivers/ADC.c:109:9:MCAL_ADC_EOC	24	static
+../Drivers/ADC.c:117:10:MCAL_ADC_Read	32	static

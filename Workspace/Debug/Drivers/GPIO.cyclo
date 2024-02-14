@@ -1,0 +1,9 @@
+../Drivers/GPIO.c:12:9:GET_CRLH_Position	28
+../Drivers/GPIO.c:79:6:MCAL_GPIO_Init	10
+../Drivers/GPIO.c:149:6:MCAL_GPIO_DeInit	6
+../Drivers/GPIO.c:204:9:MCAL_GPIO_ReadPin	2
+../Drivers/GPIO.c:225:10:MCAL_GPIO_ReadPort	1
+../Drivers/GPIO.c:240:6:MCAL_GPIO_WritePin	2
+../Drivers/GPIO.c:271:6:MCAL_GPIO_WritePort	1
+../Drivers/GPIO.c:284:6:MCAL_GPIO_TogglePin	1
+../Drivers/GPIO.c:298:9:MCAL_GPIO_LockPin	2

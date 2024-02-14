@@ -1,0 +1,7 @@
+../Drivers/Ticker.c:16:6:TIM2_IRQHandler	4	static
+../Drivers/Ticker.c:21:6:Ticker_Init	8	static
+../Drivers/Ticker.c:31:6:Ticker_Start	4	static
+../Drivers/Ticker.c:35:6:Ticker_Stop	4	static
+../Drivers/Ticker.c:39:6:Ticker_Reset_Count	4	static
+../Drivers/Ticker.c:44:10:Get_ms	4	static
+../Drivers/Ticker.c:49:6:Ticker_ms	16	static

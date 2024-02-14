@@ -1,0 +1,7 @@
+../Src/main.c:83:5:main	1
+../Src/main.c:222:6:vUpdate_Screen_Handler	21
+../Src/main.c:358:6:vMP3_Player_Handler	14
+../Src/main.c:426:6:vButton_Handler	16
+../Src/main.c:497:6:vTicker_Handler	9
+../Src/main.c:575:6:vMenu_Handler	5
+../Src/main.c:633:6:Start_Screen	2

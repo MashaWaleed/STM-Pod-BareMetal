@@ -1,0 +1,12 @@
+../Drivers/EXTI.c:32:6:Enable_NVIC	8
+../Drivers/EXTI.c:67:6:Disable_NVIC	8
+../Drivers/EXTI.c:130:6:MCAL_EXTI_GPIO_Init	1
+../Drivers/EXTI.c:145:6:MCAL_EXTI_GPIO_Deinit	1
+../Drivers/EXTI.c:181:6:MCAL_EXTI_GPIO_Update	9
+../Drivers/EXTI.c:245:6:EXTI0_IRQHandler	1
+../Drivers/EXTI.c:253:6:EXTI1_IRQHandler	1
+../Drivers/EXTI.c:260:6:EXTI2_IRQHandler	1
+../Drivers/EXTI.c:267:6:EXTI3_IRQHandler	1
+../Drivers/EXTI.c:276:6:EXTI4_IRQHandler	1
+../Drivers/EXTI.c:285:6:EXTI9_5_IRQHandler	6
+../Drivers/EXTI.c:296:6:EXTI15_10_IRQHandler	7

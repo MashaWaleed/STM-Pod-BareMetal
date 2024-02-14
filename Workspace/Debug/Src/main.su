@@ -1,0 +1,7 @@
+../Src/main.c:83:5:main	80	static
+../Src/main.c:222:6:vUpdate_Screen_Handler	72	static
+../Src/main.c:358:6:vMP3_Player_Handler	40	static
+../Src/main.c:426:6:vButton_Handler	32	static
+../Src/main.c:497:6:vTicker_Handler	48	static
+../Src/main.c:575:6:vMenu_Handler	48	static
+../Src/main.c:633:6:Start_Screen	32	static

@@ -1,0 +1,8 @@
+../Drivers/RCC_program.c:22:5:PLL_MUL_Calculator	16	static
+../Drivers/RCC_program.c:49:16:MCAL_RCC_InitSysClock	16	static
+../Drivers/RCC_program.c:160:16:MCAL_RCC_EnablePeripheral	24	static
+../Drivers/RCC_program.c:192:16:MCAL_RCC_DisablePeripheral	24	static
+../Drivers/RCC_program.c:224:10:MCAL_RCC_GetSYSCLK	8	static
+../Drivers/RCC_program.c:236:10:MCAL_RCC_GetHCLK	8	static
+../Drivers/RCC_program.c:240:10:MCAL_RCC_GetPCLK1	8	static
+../Drivers/RCC_program.c:244:10:MCAL_RCC_GetPCLK2	8	static

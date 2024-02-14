@@ -1,0 +1,13 @@
+../Drivers/SPI.c:29:16:CheckFlag_TXE	16	static
+../Drivers/SPI.c:34:16:CheckFlag_RXNE	16	static
+../Drivers/SPI.c:37:16:CheckFlag_ERR	16	static
+../Drivers/SPI.c:49:6:MCAL_SPI_Init	24	static
+../Drivers/SPI.c:76:6:MCAL_SPI_GPIO_PINS	24	static
+../Drivers/SPI.c:187:6:MCAL_SPI_TX	32	static
+../Drivers/SPI.c:211:6:MCAL_SPI_RX	32	static
+../Drivers/SPI.c:236:6:MCAL_SPI_TX_IT	32	static
+../Drivers/SPI.c:253:6:MCAL_SPI_RX_IT	32	static
+../Drivers/SPI.c:270:6:MCAL_SPI_TX_RX	24	static
+../Drivers/SPI.c:273:6:MCAL_SPI_TX_RX_IT	24	static
+../Drivers/SPI.c:281:6:SPI1_IRQHandler	16	static
+../Drivers/SPI.c:291:6:SPI2_IRQHandler	16	static

@@ -1,0 +1,9 @@
+../Drivers/NVIC_Program.c:10:6:SCB_SetPriorityGrouping	1
+../Drivers/NVIC_Program.c:16:16:MCAL_NVIC_EnableIRQ	4
+../Drivers/NVIC_Program.c:44:16:MCAL_NVIC_DisableIRQ	4
+../Drivers/NVIC_Program.c:71:16:MCAL_NVIC_SetPendingIRQ	4
+../Drivers/NVIC_Program.c:98:16:MCAL_NVIC_ClearPendingIRQ	4
+../Drivers/NVIC_Program.c:121:16:MCAL_NVIC_GetPendingIRQ	8
+../Drivers/NVIC_Program.c:176:16:MCAL_NVIC_xSetPriority	3
+../Drivers/NVIC_Program.c:206:16:MCAL_NVIC_vSetPriority	4
+../Drivers/NVIC_Program.c:268:16:MCAL_NVIC_xGetPriority	2

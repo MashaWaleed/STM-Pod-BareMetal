@@ -1,0 +1,10 @@
+../Drivers/USART.c:25:16:GetIndex	3
+../Drivers/USART.c:42:6:MCAL_USART_Init	3
+../Drivers/USART.c:77:6:MCAL_USART_DeInit	4
+../Drivers/USART.c:90:6:MCAL_USART_Send_Data	5
+../Drivers/USART.c:112:6:MCAL_USART_WAIT_TC	2
+../Drivers/USART.c:117:6:MCAL_USART_Get_Data	6
+../Drivers/USART.c:144:6:MCAL_USART_GPIO_SetPins	16
+../Drivers/USART.c:258:6:USART1_IRQHandler	1
+../Drivers/USART.c:262:6:USART2_IRQHandler	1
+../Drivers/USART.c:266:6:USART3_IRQHandler	1

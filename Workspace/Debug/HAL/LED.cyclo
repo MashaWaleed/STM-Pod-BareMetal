@@ -1,0 +1,4 @@
+../HAL/LED.c:16:6:HAL_LED_Init	1
+../HAL/LED.c:26:6:HAL_LED_On	1
+../HAL/LED.c:31:6:HAL_LED_Off	1
+../HAL/LED.c:36:6:HAL_LED_Toggle	1
