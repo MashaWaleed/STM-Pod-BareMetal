@@ -1,5 +1,5 @@
 # Welcome To Masha Pod :)
-## Your Fully DIY BareMetal Music Player based on ARM.
+## Your Fully DIY BareMetal Music Player based on ARM, Utilizing Free RTOS.
 
 
 ## Some photos
