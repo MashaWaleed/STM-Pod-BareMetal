@@ -1,17 +1,19 @@
-/* vim: set ai et ts=4 sw=4: */
+
+   ///////////////////////////////////////////////////
+  ////   Repuropsed by Masha for BareMeral     /////
+ //////////////////////////////////////////////////
+
 #include "stm32f103x8.h"
 #include "GPIO.h"
 #include "SPI.h"
 #include "STD_TYPES.h"
 
-#include "STK_interface.h"
 #include "st7735.h"
 #include "malloc.h"
 #include "string.h"
 
 #define DELAY 0x80
 
-// based on Adafruit ST7735 library for Arduino
 static const uint8_t
   init_cmds1[] = {            // Init for 7735R, part 1 (red or green tab)
     15,                       // 15 commands in list:
@@ -39,7 +41,7 @@ static const uint8_t
       0x00,                   //     Boost frequency
     ST7735_PWCTR4 , 2      ,  // 10: Power control, 2 args, no delay:
       0x8A,                   //     BCLK/2, Opamp current small & Medium low
-      0x2A,  
+      0x2A,
     ST7735_PWCTR5 , 2      ,  // 11: Power control, 2 args, no delay:
       0x8A, 0xEE,
     ST7735_VMCTR1 , 1      ,  // 12: Power control, 1 arg, no delay:
@@ -100,7 +102,6 @@ void ST7735_Unselect() {
 
 static void ST7735_Reset() {
     MCAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_RESET);
-    STK_SetDelay_ms(5);
     MCAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_SET);
 }
 
@@ -135,7 +136,6 @@ static void ST7735_ExecuteCommandList(const uint8_t *addr) {
         if(ms) {
             ms = *addr++;
             if(ms == 255) ms = 500;
-            STK_SetDelay_ms(ms);
         }
     }
 }
@@ -196,23 +196,6 @@ static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint
         }
     }
 }
-
-/*
-Simpler (and probably slower) implementation:
-
-static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color) {
-    uint32_t i, b, j;
-
-    for(i = 0; i < font.height; i++) {
-        b = font.data[(ch - 32) * font.height + i];
-        for(j = 0; j < font.width; j++) {
-            if((b << j) & 0x8000)  {
-                ST7735_DrawPixel(x + j, y + i, color);
-            } 
-        }
-    }
-}
-*/
 
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
     ST7735_Select();

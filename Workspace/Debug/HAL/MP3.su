@@ -1,8 +1,9 @@
 ../HAL/MP3.c:40:6:Send_cmd	40	static
-../HAL/MP3.c:50:6:HAL_DF_Init	16	static
-../HAL/MP3.c:56:6:HAL_DF_Next	8	static
-../HAL/MP3.c:61:6:HAL_DF_Pause	8	static
-../HAL/MP3.c:66:6:HAL_DF_Previous	8	static
-../HAL/MP3.c:71:6:HAL_DF_Playback	8	static
-../HAL/MP3.c:76:6:HAL_DF_SpecifyVolume	16	static
-../HAL/MP3.c:81:6:HAL_DF_SpecifyTrack	16	static
+../HAL/MP3.c:50:9:HAL_DF_Init	40	static
+../HAL/MP3.c:65:6:HAL_DF_Wait_Push	32	static
+../HAL/MP3.c:76:6:HAL_DF_Next	8	static
+../HAL/MP3.c:81:6:HAL_DF_Pause	8	static
+../HAL/MP3.c:86:6:HAL_DF_Previous	8	static
+../HAL/MP3.c:91:6:HAL_DF_Playback	8	static
+../HAL/MP3.c:96:6:HAL_DF_SpecifyVolume	16	static
+../HAL/MP3.c:101:6:HAL_DF_SpecifyTrack	16	static

@@ -19,20 +19,14 @@
 /*************<Global Variables***********/
 USART_Config_t *Global_USART_Config[3] = { NULL };
 
-
 /*************<Private Helper Functions***********/
 
-static uint8_t GetIndex(USART_TypeDef *USARTx)
-{
-	if(USARTx == USART1){
+static uint8_t GetIndex(USART_TypeDef *USARTx) {
+	if (USARTx == USART1) {
 		return 0;
-	}
-	else if(USARTx == USART2)
-	{
+	} else if (USARTx == USART2) {
 		return 1;
-	}
-	else
-	{
+	} else {
 		return 2;
 	}
 }
@@ -115,29 +109,42 @@ void MCAL_USART_WAIT_TC(USART_TypeDef *USARTx) {
 }
 
 void MCAL_USART_Get_Data(USART_TypeDef *USARTx, uint16_t *pRxBuffer,
-		enum Polling_Mechanism PollingEN) {
-	uint8_t LocalIndex = GetIndex(USARTx);
-	if (PollingEN == enable) {
-		while (!(USARTx->SR & 1 << 5))
-			;
-	}
+		enum Polling_Mechanism PollingEN, uint8_t size) {
+	uint8_t temp_cnt = 1;
+	//uint8_t LocalIndex = GetIndex(USARTx);
 
-	if (Global_USART_Config[LocalIndex]->PayLoadLength == USART_DATA_9bits) {
-		if (Global_USART_Config[LocalIndex]->Parity == USART_PARITY_NONE) {
-			*((u16*) pRxBuffer) = USARTx->DR;
+	while (temp_cnt <= size) {
+		if (PollingEN == enable) {
+			while (!(USARTx->SR & 1 << 5))
+				;
 		}
+//
+//		if (Global_USART_Config[LocalIndex]->PayLoadLength == USART_DATA_9bits) {
+//			if (Global_USART_Config[LocalIndex]->Parity == USART_PARITY_NONE) {
+//				*((u16*) pRxBuffer) = USARTx->DR;
+//				pRxBuffer += 1;
+//				temp_cnt++;
+//			}
+//
+//			else {
+//				*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0xFF);
+//				pRxBuffer += 1;
+//				temp_cnt++;
+//			}
+//		} else {
+//			if (Global_USART_Config[LocalIndex]->Parity == USART_PARITY_NONE) {
+				*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0xFF);
+				pRxBuffer += 1;
+				temp_cnt++;
 
-		else {
-			*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0xFF);
-		}
-	} else {
-		if (Global_USART_Config[LocalIndex]->Parity == USART_PARITY_NONE) {
-			*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0xFF);
-		}
+//			}
 
-		else {
-			*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0x7F);
-		}
+//			else {
+//				*((u16*) pRxBuffer) = (USARTx->DR & (u8) 0x7F);
+//				pRxBuffer += 1;
+//				temp_cnt++;
+//			}
+//		}
 	}
 }
 
@@ -162,8 +169,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PA11 CTS
 		if (Global_USART_Config[0]->FlowCTRL == USART_FLOW_CTRL_CTS
-				|| Global_USART_Config[0]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[0]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_11;
 			cfg.GPIO_MODE = GPIO_MODE_INPUT_FLO;
 			MCAL_GPIO_Init(GPIOA, &cfg);
@@ -171,8 +177,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PA12 RTS
 		if (Global_USART_Config[0]->FlowCTRL == USART_FLOW_CTRL_RTS
-				|| Global_USART_Config[0]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[0]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_12;
 			cfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
 			cfg.GPIO_Output_Speed = GPIO_SPEED_10M;
@@ -198,8 +203,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PA0 CTS
 		if (Global_USART_Config[1]->FlowCTRL == USART_FLOW_CTRL_CTS
-				|| Global_USART_Config[1]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[1]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_0;
 			cfg.GPIO_MODE = GPIO_MODE_INPUT_FLO;
 			MCAL_GPIO_Init(GPIOA, &cfg);
@@ -207,8 +211,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PA1 RTS
 		if (Global_USART_Config[1]->FlowCTRL == USART_FLOW_CTRL_RTS
-				|| Global_USART_Config[1]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[1]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_1;
 			cfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
 			cfg.GPIO_Output_Speed = GPIO_SPEED_10M;
@@ -234,8 +237,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PB13 CTS
 		if (Global_USART_Config[2]->FlowCTRL == USART_FLOW_CTRL_CTS
-				|| Global_USART_Config[2]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[2]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_13;
 			cfg.GPIO_MODE = GPIO_MODE_INPUT_FLO;
 			MCAL_GPIO_Init(GPIOB, &cfg);
@@ -243,8 +245,7 @@ void MCAL_USART_GPIO_SetPins(USART_TypeDef *USARTx) {
 
 		//PB14 RTS
 		if (Global_USART_Config[2]->FlowCTRL == USART_FLOW_CTRL_RTS
-				|| Global_USART_Config[2]->FlowCTRL
-						== USART_FLOW_CTRL_CTS_RTS) {
+				|| Global_USART_Config[2]->FlowCTRL == USART_FLOW_CTRL_CTS_RTS) {
 			cfg.GPIO_PinNumber = GPIO_PIN_14;
 			cfg.GPIO_MODE = GPIO_MODE_OUTPUT_AF_PP;
 			cfg.GPIO_Output_Speed = GPIO_SPEED_10M;

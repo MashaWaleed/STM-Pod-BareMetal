@@ -1,0 +1,3 @@
+../HAL/Buzzer.c:19:13:Buzz	16	static
+../HAL/Buzzer.c:27:12:frequency	72	static
+../HAL/Buzzer.c:48:6:playNote	16	static

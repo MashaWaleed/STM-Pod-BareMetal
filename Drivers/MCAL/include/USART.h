@@ -166,7 +166,7 @@ void MCAL_USART_Send_Data(USART_TypeDef * USARTx, uint16_t* pTxBuffer,enum Polli
 * Note			:   none.
 ======================================================================================================================
 */
-void MCAL_USART_Get_Data(USART_TypeDef * USARTx, uint16_t* pRxBuffer,  enum Polling_Mechanism PollingEN);
+void MCAL_USART_Get_Data(USART_TypeDef * USARTx, uint16_t* pRxBuffer,  enum Polling_Mechanism PollingEN ,uint8_t size);
 
 /*
 ======================================================================================================================

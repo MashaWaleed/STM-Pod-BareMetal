@@ -1,3 +1,8 @@
+   ///////////////////////////////////////////////////
+  ////   Repuropsed by Masha for BareMeral     /////
+ //////////////////////////////////////////////////
+
+
 #ifndef __ST7735_H__
 #define __ST7735_H__
 
@@ -21,28 +26,6 @@
 #define ST7735_CS_GPIO_Port  GPIOA
 #define ST7735_DC_Pin        GPIO_PIN_4
 #define ST7735_DC_GPIO_Port  GPIOA
-
-// AliExpress/eBay 1.8" display, default orientation
-/*
-#define ST7735_IS_160X128 1
-#define ST7735_WIDTH  128
-#define ST7735_HEIGHT 160
-#define ST7735_XSTART 0
-#define ST7735_YSTART 0
-#define ST7735_ROTATION (ST7735_MADCTL_MX | ST7735_MADCTL_MY)
-*/
-
-// AliExpress/eBay 1.8" display, rotate right
-/*
-#define ST7735_IS_160X128 1
-#define ST7735_WIDTH  160
-#define ST7735_HEIGHT 128
-#define ST7735_XSTART 0
-#define ST7735_YSTART 0
-#define ST7735_ROTATION (ST7735_MADCTL_MY | ST7735_MADCTL_MV)
-*/
-
-// AliExpress/eBay 1.8" display, rotate left
 
 #define ST7735_IS_160X128 1
 #define ST7735_WIDTH  160
@@ -112,16 +95,6 @@
 #define ST7735_GREEN 0xF81F
 #define ST7735_BLUE  0xFFE0
 #define ST7735_BLACK   0xFFFF
-
-//#define	ST7735_BLACK   0x0000
-//#define	ST7735_BLUE    0x001F
-//#define	ST7735_RED     0xF800
-//#define	ST7735_GREEN   0x07E0
-//#define ST7735_CYAN    0x07FF
-//#define ST7735_MAGENTA 0xF81F
-//#define ST7735_YELLOW  0xFFE0
-//#define ST7735_WHITE   0xFFFF
-
 
 #define ST7735_COLOR565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
 

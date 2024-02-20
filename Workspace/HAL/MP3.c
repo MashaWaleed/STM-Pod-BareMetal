@@ -7,7 +7,7 @@
 #include "stdio.h"
 #include "stm32f103x8.h"
 #include "USART.h"
-#include "STK_interface.h"
+#include "MP3.h"
 
 /*
 
@@ -47,11 +47,31 @@ void Send_cmd (uint16_t cmd, uint16_t Parameter1, uint16_t Parameter2)
 }
 
 
-void HAL_DF_Init (uint8_t volume)
+uint8_t HAL_DF_Init (uint8_t volume)
 {
+	uint16_t rec[10];
 	Send_cmd(0x3F, 0x00, Source);
 	Send_cmd(0x06, 0x00, volume);
+
+
+	MCAL_USART_Get_Data(DF_UART, rec,enable, 3);
+	if(rec[1] == 254)
+	{
+		return TF_OFFLINE;
+	}
+	return TF_ONLINE;
 }
+
+void HAL_DF_Wait_Push (void)
+{
+	uint16_t rec[10] = {0,0,0,0,0,0,0,0,0,0};
+	while(rec[2] == 0)
+	{
+		MCAL_USART_Get_Data(DF_UART, rec,enable, 3);
+	}
+
+}
+
 
 void HAL_DF_Next (void)
 {

@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 
-#define MAX_TRACK_NUM        4
+#define MAX_TRACK_NUM        10
 extern const char *trackNames[MAX_TRACK_NUM];
 extern const int duration[MAX_TRACK_NUM];
 

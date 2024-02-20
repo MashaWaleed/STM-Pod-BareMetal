@@ -1,8 +1,9 @@
+   ///////////////////////////////////////////////////
+  ////   Repuropsed by Masha for BareMeral     /////
+ //////////////////////////////////////////////////
+
 /*
  * GFX_FUNCTIONS.h
- *
- *  Created on: 30-Oct-2020
- *      Author: meh
  */
 
 #ifndef INC_GFX_FUNCTIONS_H_

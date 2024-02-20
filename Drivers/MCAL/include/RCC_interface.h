@@ -10,52 +10,25 @@
 #define RCC_INTERFACE_H_
 
 
-/**
- * @defgroup RCC_Peripheral_Macros RCC Peripheral Macros
- * @brief Macros related to clock configuration for different peripherals.
- * @{
- */
 
-/**
- * @defgroup RCC_Clock_Domains Clock Domains
- * @brief Macros defining the available clock domains for peripheral clock configuration.
- * @{
- */
+#define RCC_AHB                 0
+#define RCC_APB1                1
+#define RCC_APB2                2
 
-/**
- * @brief Available clock domains for peripheral clock configuration.
- */
-#define RCC_AHB                 0 /**< Advanced High-performance Bus (AHB) domain. */
-#define RCC_APB1                1 /**< Advanced Peripheral Bus 1 (APB1) domain. */
-#define RCC_APB2                2 /**< Advanced Peripheral Bus 2 (APB2) domain. */
 
-/** @} */
+#define RCC_AHBENR_DMA1EN       0
+#define RCC_AHBENR_DMA2EN       1
+#define RCC_AHBENR_SRAMEN       2
+#define RCC_AHBENR_FLITFEN      4
+#define RCC_AHBENR_CRCEN        6
+#define RCC_AHBENR_OTGFSEN      12
+#define RCC_AHBENR_ETHMACEN     14
+#define RCC_AHBENR_ETHMACTXEN   15
+#define RCC_AHBENR_ETHMACRXEN   16
+#define RCC_AHBENR_ETHMACPTPEN  17
+#define RCC_AHBENR_OTGHSEN      29
 
-/**
- * @defgroup RCC_AHBENR_Bit_Def RCC_AHBENR Bit Definitions
- * @brief Macros representing the bit positions in the AHB Peripheral Clock Enable Register (RCC_AHBENR).
- * @{
- */
 
-#define RCC_AHBENR_DMA1EN       0  /**< DMA1 clock enable */
-#define RCC_AHBENR_DMA2EN       1  /**< DMA2 clock enable */
-#define RCC_AHBENR_SRAMEN       2  /**< SRAM interface clock enable */
-#define RCC_AHBENR_FLITFEN      4  /**< FLITF clock enable */
-#define RCC_AHBENR_CRCEN        6  /**< CRC clock enable */
-#define RCC_AHBENR_OTGFSEN      12 /**< USB OTG FS clock enable */
-#define RCC_AHBENR_ETHMACEN     14 /**< Ethernet MAC clock enable */
-#define RCC_AHBENR_ETHMACTXEN   15 /**< Ethernet Transmission clock enable */
-#define RCC_AHBENR_ETHMACRXEN   16 /**< Ethernet Reception clock enable */
-#define RCC_AHBENR_ETHMACPTPEN  17 /**< Ethernet PTP clock enable */
-#define RCC_AHBENR_OTGHSEN      29 /**< USB OTG HS clock enable */
-
-/** @} */
-
-/**
- * @defgroup RCC_APB1ENR_Bit_Def RCC_APB1ENR Bit Definitions
- * @brief Macros representing the bit positions in the APB1 Peripheral Clock Enable Register (RCC_APB1ENR).
- * @{
- */
 
 #define RCC_APB1ENR_TIM2EN      0  /**< Timer 2 clock enable */
 #define RCC_APB1ENR_TIM3EN      1  /**< Timer 3 clock enable */
@@ -81,13 +54,6 @@
 #define RCC_APB1ENR_PWREN       28 /**< Power interface clock enable */
 #define RCC_APB1ENR_DACEN       29 /**< DAC clock enable */
 
-/** @} */
-
-/**
- * @defgroup RCC_APB2ENR_Bit_Def RCC_APB2ENR Bit Definitions
- * @brief Macros representing the bit positions in the APB2 Peripheral Clock Enable Register (RCC_APB2ENR).
- * @{
- */
 
 #define RCC_APB2ENR_AFIOEN      0  /**< Alternate function IO clock enable */
 #define RCC_APB2ENR_IOPAEN      2  /**< I/O port A clock enable */
@@ -108,53 +74,11 @@
 #define RCC_APB2ENR_TIM10EN     20 /**< Timer 10 clock enable */
 #define RCC_APB2ENR_TIM11EN     21 /**< Timer 11 clock enable */
 
-/** @} */
 
-/** @} */  /* End of RCC_Peripheral_Macros group */
-
-
-/**
- * @defgroup RCC_API RCC APIs
- * @brief Functions for RCC (Reset and Clock Control) configuration.
- * @{
- */
-
-/**
- * @brief Initialize the system clock configuration.
- *
- * This function initializes the system clock configuration according to the desired settings.
- * It should be called early in the program to properly configure the clock system.
- *
- * @return Std_ReturnType
- * @retval E_OK     Clock initialization successful.
- * @retval E_NOT_OK Clock initialization failed.
- */
 Std_ReturnType MCAL_RCC_InitSysClock(void);
 
-/**
- * @brief Enable a specific peripheral on a specific bus.
- *
- * This function enables a specific peripheral on a specific bus.
- *
- * @param[in] Copy_PeripheralId The ID of the peripheral to be enabled.
- * @param[in] Copy_BusId        The ID of the bus to which the peripheral belongs (RCC_AHB, RCC_APB1, or RCC_APB2).
- * @return Std_ReturnType
- * @retval E_OK     Peripheral enabling successful.
- * @retval E_NOT_OK Peripheral enabling failed.
- */
-Std_ReturnType MCAL_RCC_EnablePeripheral(u8 Copy_BusId, u8 Copy_PeripheralId);
 
-/**
- * @brief Disable a specific peripheral.
- *
- * This function disables a previously enabled peripheral.
- * 
- * @param[in] Copy_PeripheralId The ID of the peripheral to be enabled.
- * @param[in] Copy_BusId        The ID of the bus to which the peripheral belongs (RCC_AHB, RCC_APB1, or RCC_APB2).
- * @return Std_ReturnType
- * @retval E_OK     Peripheral disabling successful.
- * @retval E_NOT_OK Peripheral disabling failed.
- */
+Std_ReturnType MCAL_RCC_EnablePeripheral(u8 Copy_BusId, u8 Copy_PeripheralId);
 Std_ReturnType MCAL_RCC_DisablePeripheral(u8 Copy_BusId, u8 Copy_PeripheralId);
 
 uint32_t MCAL_RCC_GetSYSCLK(void);
@@ -162,11 +86,5 @@ uint32_t MCAL_RCC_GetHCLK(void);
 uint32_t MCAL_RCC_GetPCLK1(void);
 uint32_t MCAL_RCC_GetPCLK2(void);
 
-/**
- * @}
- */
 
-
-
-
-#endif /**< RCC_INTERFACE_H_ */
+#endif

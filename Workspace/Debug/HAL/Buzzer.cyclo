@@ -1,0 +1,3 @@
+../HAL/Buzzer.c:19:13:Buzz	1
+../HAL/Buzzer.c:27:12:frequency	3
+../HAL/Buzzer.c:48:6:playNote	3

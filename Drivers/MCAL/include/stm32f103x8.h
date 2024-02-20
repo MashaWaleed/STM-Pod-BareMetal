@@ -84,6 +84,8 @@
 #define ADC1_BASE								 0x40012400UL
 #define ADC2_BASE								 0x40012800UL
 
+
+#define TIMER1_BASE                              0x40012C00UL
 //=====================================================================
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -212,6 +214,30 @@ typedef struct {
 	volatile uint32_t DMAR;
 } Timer_TypeDef;
 
+
+typedef struct {
+	volatile uint32_t CR1;
+	volatile uint32_t CR2;
+	volatile uint32_t SMCR;
+	volatile uint32_t DIER;
+	volatile uint32_t SR;
+	volatile uint32_t EGR;
+	volatile uint32_t CCMR1;
+	volatile uint32_t CCMR2;
+	volatile uint32_t CCER;
+	volatile uint32_t CNT;
+	volatile uint32_t PSC;
+	volatile uint32_t ARR;
+	volatile uint32_t RCR;
+	volatile uint32_t CCR1;
+	volatile uint32_t CCR2;
+	volatile uint32_t CCR3;
+	volatile uint32_t CCR4;
+	volatile uint32_t BDTR;
+	volatile uint32_t DCR;
+	volatile uint32_t DMAR;
+} Timer1_TypeDef;
+
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-
 //Peripheral register: SPI
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -291,6 +317,8 @@ typedef struct {
 #define USART1								  ((USART_TypeDef *)USART1_BASE)
 #define USART2								  ((USART_TypeDef *)USART2_BASE)
 #define USART3								  ((USART_TypeDef *)USART3_BASE)
+
+#define TIMER1								  ((Timer1_TypeDef *)TIMER1_BASE)
 
 #define TIMER2								  ((Timer_TypeDef *)TIMER2_BASE)
 #define TIMER3								  ((Timer_TypeDef *)TIMER3_BASE)

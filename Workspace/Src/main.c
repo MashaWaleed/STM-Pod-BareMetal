@@ -25,12 +25,12 @@
 
 #include "GPIO.h"
 #include "RCC_interface.h"
-//#include "STK_interface.h"
 #include "USART.h"
 #include "SPI.h"
 #include "EXTI.h"
 #include "Ticker.h"
 #include "ADC.h"
+#include "PWM.h"
 #include "img.h"
 
 //////////////////////////////////////////////////////
@@ -42,24 +42,29 @@
 #include "MP3.h"
 #include "Tracks.h"
 #include "Menu.h"
+#include "Buzzer.h"
 
 void Start_Screen(void);
+uint8_t Draw_Next_Tracks(uint8_t track);
+uint8_t Erase_Prev_Tracks(uint8_t track);
+void Draw_Selector(uint8_t pos);
+void Erase_Selector(uint8_t pos);
 
 int8_t Menu_Counter = 0;
 int8_t Vol_Counter = 15;
 int8_t Track_Counter = 0;
 int8_t Slide_Counter = 0;
+uint32_t Brightness_Counter = 0;
 
 uint8_t BSY = 0;
-
-uint8_t bruh = 0;
+uint8_t smphrPlaceHolder = 0;
 
 /***Task Handles***/
 TaskHandle_t xUpdate_Screen_Handle = NULL;
 TaskHandle_t xMP3_Player_Handle = NULL;
 TaskHandle_t xButton_Handle = NULL;
 TaskHandle_t xTicker_Handle = NULL;
-TaskHandle_t xBattery_Handle = NULL;
+TaskHandle_t xBrightness_Handle = NULL;
 TaskHandle_t xMenu_Handle = NULL;
 
 /***Task Prototype***/
@@ -67,7 +72,7 @@ void vUpdate_Screen_Handler(void *params);
 void vMP3_Player_Handler(void *params);
 void vButton_Handler(void *params);
 void vTicker_Handler(void *params);
-void vBattery_Handler(void *params);
+void vBrightness_Handler(void *params);
 void vMenu_Handler(void *params);
 
 /***Event Group Handle handle***/
@@ -76,7 +81,7 @@ EventGroupHandle_t buttonEventGroup_M;
 EventGroupHandle_t MenuEventGroup;
 EventGroupHandle_t TickerEventGroup;
 /***Queue handles***/
-QueueHandle_t xBatteryQueue;
+QueueHandle_t xBrightnessQueue;
 QueueHandle_t xProgressQueue;
 
 /*** Semaphore Handles***/
@@ -100,17 +105,18 @@ int main(void) {
 	NULL, 1, &xButton_Handle);
 	xTaskCreate(vTicker_Handler, "track time track",
 	configMINIMAL_STACK_SIZE, NULL, 2, &xTicker_Handle);
-//	xTaskCreate(vBattery_Handler, "battery capacity",
-//	configMINIMAL_STACK_SIZE, NULL, 1, &xBattery_Handle);
+	xTaskCreate(vBrightness_Handler, "ADC AND DAC",
+	configMINIMAL_STACK_SIZE, NULL, 1, &xBrightness_Handle);
 	xTaskCreate(vMenu_Handler, "Menu",
 	configMINIMAL_STACK_SIZE, NULL, 1, &xMenu_Handle);
 
 	// Queue Creation
 
-	xBatteryQueue = xQueueCreate(1, sizeof(float));
+	xBrightnessQueue = xQueueCreate(1, sizeof(uint32_t));
 	xProgressQueue = xQueueCreate(1, sizeof(float));
 
-	//Welcome Screen
+
+	// Hardware initialization
 
 	MCAL_RCC_InitSysClock();
 	MCAL_RCC_EnablePeripheral(RCC_APB2, RCC_APB2ENR_IOPAEN);
@@ -120,6 +126,7 @@ int main(void) {
 	MCAL_RCC_EnablePeripheral(RCC_APB2, RCC_APB2ENR_SPI1EN);
 	MCAL_RCC_EnablePeripheral(RCC_APB2, RCC_APB2ENR_USART1EN);
 	MCAL_RCC_EnablePeripheral(RCC_APB2, RCC_APB2ENR_ADC1EN);
+	MCAL_RCC_EnablePeripheral(RCC_APB1, RCC_APB1ENR_TIM2EN);
 
 	USART_Config_t uartcfg;
 	uartcfg.BaudRate = USART_BAUD_RATE_9600;
@@ -207,14 +214,49 @@ int main(void) {
 	ccfg.GPIO_PinNumber = GPIO_PIN_12;
 	MCAL_GPIO_Init(GPIOA, &ccfg);
 
+	PWM_Init(60000);
 	ST7735_Init();
-	HAL_DF_Init(15);
-	Ticker_Init();
 	MCAL_ADC_Init(ADC1, GPIOA, GPIO_PIN_0);
+	Brightness_Counter = MCAL_ADC_Read(ADC1, GPIOA, GPIO_PIN_0);
+	if (Brightness_Counter > 4040)
+		Brightness_Counter = 4040;
+	Brightness_Counter = (Brightness_Counter - 0) * (50 - 10) / (4040 - 0) + 10;
 
-	// NOT ENOUGH FLASH SIZE FOR WELCOME IMAGE --> FUTURE EXPANSION EXTERNAL FLASH
+	// NOT ENOUGH FLASH SIZE FOR WELCOME IMAGE --> CHANGE THE FLASH SIZE IN FLASHLD
 	ST7735_DrawImage(0, 0, 160, 128, img);
+
+	PWM_Duty(60000);
+	playNote();
+
+	if (HAL_DF_Init(15) == TF_OFFLINE) {
+		// ALARM SCREEN
+		fillRect(19, 36, 145-19, 103-36, ST7735_BLACK);
+		drawRect(24, 41, 140-24, 99-41, ST7735_YELLOW);
+
+		ST7735_WriteString(32, 56, "SD UNDETECTED", Font_7x10, ST7735_YELLOW, ST7735_BLACK);
+		fillTriangle(65,88, 75, 78, 85, 88, ST7735_YELLOW);
+		fillRect(75, 81, 2, 4, ST7735_BLACK);
+		fillRect(75, 86, 2, 2, ST7735_BLACK);
+
+		HAL_DF_Wait_Push();
+
+		ST7735_WriteString(32, 56, "SD UNDETECTED", Font_7x10, ST7735_BLACK, ST7735_BLACK);
+		fillTriangle(65,88, 75, 78, 85, 88, ST7735_BLACK);
+
+		ST7735_WriteString(32, 56, "SD DETECTED", Font_7x10, ST7735_YELLOW, ST7735_BLACK);
+		fillCircle(76, 84, 13, ST7735_YELLOW);
+
+		fillCircle(70, 80, 3, ST7735_BLACK);
+		fillCircle(83, 80, 3, ST7735_BLACK);
+
+		fillCircle(76, 90, 4, ST7735_BLACK);
+		fillCircle(76, 88, 4, ST7735_YELLOW);
+
+
+	}
+
 	Ticker_ms(5000);
+	Ticker_Init();
 	vTaskStartScheduler();
 
 	for (;;)
@@ -231,8 +273,8 @@ void vUpdate_Screen_Handler(void *params) {
 	float perc;
 	float Prev_Perc = 0;
 
-	//float Prev_Battery = 0;
-	//float Battery;
+	uint32_t Prev_Brightness = 0;
+	uint32_t Brightness;
 
 	for (;;) {
 		EventBits_t suspend = xEventGroupWaitBits(MenuEventGroup, Menu_Trigger,
@@ -286,7 +328,7 @@ void vUpdate_Screen_Handler(void *params) {
 			}
 		}
 
-		if (bits & BUTTON_PP_BIT) {
+		if ((bits & BUTTON_PP_BIT)) {
 
 			xEventGroupClearBits(buttonEventGroup, BUTTON_PP_BIT);
 			if (BSY) {
@@ -302,7 +344,7 @@ void vUpdate_Screen_Handler(void *params) {
 			}
 		}
 
-		if ((Prev_Track_Counter != Track_Counter) && !(suspend & Screen_Resume)) {
+		if ((Prev_Track_Counter != Track_Counter)) {
 			ST7735_WriteString(9, 25, getTrackName(Prev_Track_Counter),
 					Font_11x18,
 					ST7735_BLACK, ST7735_BLACK);
@@ -334,24 +376,25 @@ void vUpdate_Screen_Handler(void *params) {
 			}
 		}
 
-//		if (xQueueReceive(xBatteryQueue, &Battery, 0) == pdPASS) // the battery float value was sent
-//		{
-//			if ((Prev_Battery > Battery) || (Prev_Battery < Battery)){
-//				//WE UPDATE THE SCREEN
-//				char bat_str[4];
-//				snprintf(bat_str, sizeof(bat_str), "%d", (uint8_t)(((Prev_Battery - 3.7) / 0.5) * 100));
-//				ST7735_WriteString(40, 5, bat_str, Font_11x18, ST7735_BLACK,
-//						ST7735_BLACK);
-//				snprintf(bat_str, sizeof(bat_str), "%d",(uint8_t)(((Battery - 3.7) / 0.5) * 100));
-//				ST7735_WriteString(40, 5, bat_str, Font_11x18, ST7735_RED,
-//						ST7735_BLACK);
-//			}
-//		}
+		if (xQueueReceive(xBrightnessQueue, &Brightness, 0) == pdPASS) {
+			if (Prev_Brightness != Brightness) {
+				//WE UPDATE THE SCREEN
+				if (Brightness > Prev_Brightness) {
+					ST7735_FillRectangle(6 + (Prev_Brightness), 9,
+							(Brightness - Prev_Brightness), 7, ST7735_WHITE);
+				}
+
+				else if (Brightness < Prev_Brightness) {
+					ST7735_FillRectangle(6 + (Brightness), 9,
+							(Prev_Brightness - Brightness), 7, ST7735_BLACK);
+				}
+			}
+		}
 
 		Prev_Track_Counter = Track_Counter;
 		Prev_Vol_Counter = Vol_Counter;
 		Prev_Perc = perc;
-		//Prev_Battery = Battery;
+		Prev_Brightness = Brightness;
 
 		vTaskDelay(10);
 
@@ -380,7 +423,7 @@ void vMP3_Player_Handler(void *params) {
 
 		if (prev_busy != BSY) {
 			xEventGroupSetBits(buttonEventGroup, BUTTON_PP_BIT);
-			bruh = 1;
+			smphrPlaceHolder = 1;
 		}
 
 		EventBits_t bits = xEventGroupWaitBits(buttonEventGroup_M,
@@ -446,7 +489,7 @@ void vButton_Handler(void *params) {
 			if (Slide_Counter > MAX_TRACK_NUM - 1) {
 				Slide_Counter = 0;
 			} else if (Slide_Counter < 0) {
-				Slide_Counter = MAX_TRACK_NUM;
+				Slide_Counter = MAX_TRACK_NUM - 1;
 			}
 		} else {
 			if (MCAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET) {
@@ -503,17 +546,17 @@ void vTicker_Handler(void *params) {
 	float tick;
 
 	for (;;) {
-		if (bruh == 1)  // FLAG TO ASSUME WORKING
+		if (smphrPlaceHolder == 1)  // FLAG TO ASSUME WORKING
 				{
-			EventBits_t suspend = xEventGroupWaitBits(MenuEventGroup, Menu_Trigger,
+			EventBits_t suspend = xEventGroupWaitBits(MenuEventGroup,
+			Menu_Trigger,
 			pdFALSE, pdFALSE, 0);
 
-			if(suspend & Menu_Trigger)
-			{
+			if (suspend & Menu_Trigger) {
 				Ticker_Stop();
 				Ticker_Reset_Count();
 
-				bruh = 0;
+				smphrPlaceHolder = 0;
 				vTaskSuspend(xTicker_Handle);
 			}
 
@@ -543,41 +586,44 @@ void vTicker_Handler(void *params) {
 			perc = (tick / us) * 100;
 
 			// CASE 4 FINISHED TRACK
-			if (perc >= 98) {
+			if (perc >= 100) {
 				perc = 0;
 				// QUEUE SEND
 				xQueueSend(xProgressQueue, (void* ) &perc, 0);
 				Ticker_Stop();
 				Ticker_Reset_Count();
 				// TASK NO LONGER NEEDED
-				bruh = 0;
+				smphrPlaceHolder = 0;
 			}
 			// QUEUE SEND
 			xQueueSend(xProgressQueue, (void* ) &perc, 0);
 		}
 		prev_track = Track_Counter;
 		prev_state = BSY;
-		vTaskDelay(50);
+		vTaskDelay(200);
 	}
 }
 
-//void vBattery_Handler(void *params) {
-//	float val;
-//	for (;;) {
-//		if (MCAL_ADC_EOC(ADC1)) {
-//			val = MCAL_ADC_Read(ADC1, GPIOA, GPIO_PIN_0);
-//
-//			val = (val * 2.3 / 4095) * 3.3;
-//			//queue send
-//			xQueueSend(xBatteryQueue, (void* )&val, 1);
-//		}
-//		vTaskDelay(500);
-//	}
-//}
+void vBrightness_Handler(void *params) {
+	uint32_t val;
+	for (;;) {
+		if (MCAL_ADC_EOC(ADC1)) {
+			val = MCAL_ADC_Read(ADC1, GPIOA, GPIO_PIN_0);
+			if (val > 3860)
+				val = 3860;
+			val = (val - 0) * (50 - 10) / (3860 - 0) + 10;
+			//queue send
+			xQueueSend(xBrightnessQueue, (void* )&val, 0);
+		}
+		vTaskDelay(20);
+	}
+}
 
 void vMenu_Handler(void *params) {
 
 	uint8_t Prev_Slide_Counter = Slide_Counter;
+	uint8_t pages = MAX_TRACK_NUM / 5;
+	uint8_t current_page = 1;
 	for (;;) {
 
 		EventBits_t suspend = xEventGroupWaitBits(MenuEventGroup,
@@ -603,24 +649,54 @@ void vMenu_Handler(void *params) {
 
 			vTaskResume(xUpdate_Screen_Handle);
 			vTaskResume(xMP3_Player_Handle);
+			vTaskResume(xTicker_Handle);
 
 		}
 		if (suspend & Menu_Trigger) {
 			if (suspend & Menu_First) {
 				ST7735_FillScreen(ST7735_BLACK);
-				ST7735_WriteString(15, 15, "LOL", Font_16x26, ST7735_RED,
-				ST7735_BLACK);
+				Slide_Counter = 0;
+
+				// DRAW VERY FIRST 4 TRACK NAMES
+				Draw_Next_Tracks(Slide_Counter);
+				// DRAW THE H LINE SELECTOR
+				Draw_Selector(Slide_Counter);
+				// DRAW CURRENT PAGE
+
+				ST7735_WriteString(70, 107, "1 / 2", Font_11x18, ST7735_WHITE, ST7735_BLACK);
+
 				xEventGroupClearBits(MenuEventGroup, Menu_First);
 			}
 			if (bits & (BUTTON_UP_BIT | BUTTON_DOWN_BIT)) {
 
-				char str[4];
-				snprintf(str, sizeof(str), "%d", Prev_Slide_Counter);
-				ST7735_WriteString(100, 100, str, Font_7x10, ST7735_BLACK,
-				ST7735_BLACK);
-				snprintf(str, sizeof(str), "%d", Slide_Counter);
-				ST7735_WriteString(100, 100, str, Font_7x10, ST7735_RED,
-				ST7735_BLACK);
+				// CHEK CURRENT LOCATION IF ITS % 4 ERASE AND REWRITE NEXT 4 WITH SAME FUNCTION
+				if (Slide_Counter % 5 == 0) {
+					current_page ++;
+					if(current_page > 2 )
+					{
+						current_page = 1;
+					}
+					if(current_page == 1)
+					{
+						ST7735_WriteString(70, 107, "1 / 2", Font_11x18, ST7735_WHITE, ST7735_BLACK);
+					}
+					else if(current_page == 2)
+					{
+						ST7735_WriteString(70, 107, "2 / 2", Font_11x18, ST7735_WHITE, ST7735_BLACK);
+					}
+					// Erase Logic of tracks
+					Erase_Prev_Tracks(Prev_Slide_Counter);
+					Draw_Next_Tracks(Slide_Counter);
+
+					Erase_Selector(Prev_Slide_Counter);
+					Draw_Selector(Slide_Counter);
+				}
+
+				// DRAW SELECTOR on new pos
+				else {
+					Erase_Selector(Prev_Slide_Counter);
+					Draw_Selector(Slide_Counter);
+				}
 
 				xEventGroupClearBits(buttonEventGroup, BUTTON_UP_BIT);
 				xEventGroupClearBits(buttonEventGroup, BUTTON_DOWN_BIT);
@@ -629,6 +705,7 @@ void vMenu_Handler(void *params) {
 		}
 
 		Prev_Slide_Counter = Slide_Counter;
+		vTaskDelay(10);
 
 	}
 }
@@ -646,8 +723,7 @@ void Start_Screen(void) {
 	if (BSY) {
 		fillRect(55, 96, 4, 21, ST7735_RED);
 		fillRect(68, 96, 4, 21, ST7735_RED);
-	}
-	else{
+	} else {
 		fillTriangle(56, 107, 68, 95, 68, 118, ST7735_RED);
 	}
 
@@ -667,10 +743,95 @@ void Start_Screen(void) {
 	drawFastHLine(1, 23, 159, ST7735_RED);
 	ST7735_WriteString(97, 5, "VOL", Font_11x18, ST7735_RED, ST7735_BLACK);
 
-	char str[3];
+	char str[5];
 	snprintf(str, sizeof(str), "%d", Vol_Counter);
 	ST7735_WriteString(130, 5, str, Font_11x18, ST7735_RED, ST7735_BLACK);
 
-	//ST7735_WriteString(3, 5, "BAT", Font_11x18, ST7735_RED, ST7735_BLACK);
+	//Brightness bar
+	drawRect(5, 8, 52, 9, ST7735_RED);
+
+	Brightness_Counter = MCAL_ADC_Read(ADC1, GPIOA, GPIO_PIN_0);
+	if (Brightness_Counter > 3860)
+		Brightness_Counter = 3860;
+	Brightness_Counter = (Brightness_Counter - 0) * (50 - 10) / (3860 - 0) + 10;
+
+	ST7735_FillRectangle(6, 9, Brightness_Counter, 7, ST7735_WHITE);
+
 }
 
+uint8_t Erase_Prev_Tracks(uint8_t track) {
+
+	int i;
+	for (i = track - 4; i < track + 1; i++) {
+		ST7735_WriteString(5, 5 + ((i - track) * 20), getTrackName(i),
+				Font_11x18,
+				ST7735_BLACK, ST7735_BLACK);
+	}
+	return 4;
+
+}
+
+uint8_t Draw_Next_Tracks(uint8_t track) {
+
+	if (track == 0) // First 5
+			{
+		int i;
+		for (i = 0; i < 5; i++) {
+			if ((i + 1) > MAX_TRACK_NUM) // Check if we overflowed
+			{
+				return i;
+			}
+			ST7735_WriteString(5, 5 + i * 20, getTrackName(i), Font_7x10,
+			ST7735_BLUE, ST7735_BLACK);
+		}
+		return 5;
+	}
+
+	else if (track % 5 == 0) // Next n page
+			{
+		int i;
+		for (i = track; i < track + 5; i++) {
+			if ((i + 1) > MAX_TRACK_NUM) // Check if we overflowed
+			{
+				return i;
+			}
+			ST7735_WriteString(5, 5 + ((i - track) * 20), getTrackName(i),
+					Font_7x10,
+					ST7735_BLUE, ST7735_BLACK);
+		}
+		return 4;
+	}
+
+	else {
+		return 0;
+	}
+}
+
+void Draw_Selector(uint8_t pos) {
+
+	if (pos == 0 || (pos % 5 == 0))
+		pos = 0;
+	else if (pos == 1 || ((pos - 1) % 5 == 0))
+		pos = 1;
+	else if (pos == 2 || ((pos - 2) % 5 == 0))
+		pos = 2;
+	else if (pos == 3 || ((pos - 3) % 5 == 0))
+		pos = 3;
+	else if (pos == 4 || ((pos - 4) % 5 == 0))
+		pos = 4;
+	drawFastHLine(5, 20 + pos * 20, 100, ST7735_YELLOW);
+}
+void Erase_Selector(uint8_t pos) {
+
+	if (pos == 0 || (pos % 5 == 0))
+		pos = 0;
+	else if (pos == 1 || ((pos - 1) % 5 == 0))
+		pos = 1;
+	else if (pos == 2 || ((pos - 2) % 5 == 0))
+		pos = 2;
+	else if (pos == 3 || ((pos - 3) % 5 == 0))
+		pos = 3;
+	else if (pos == 4 || ((pos - 4) % 5 == 0))
+		pos = 4;
+	drawFastHLine(5, 20 + pos * 20, 100, ST7735_BLACK);
+}
